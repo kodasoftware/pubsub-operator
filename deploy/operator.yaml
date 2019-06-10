@@ -1,6 +1,42 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: pubsub-emulator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pubsub-emulator
+      name: pubsub-emulator
+  template:
+    metadata:
+      labels:
+        app: pubsub-emulator
+        name: pubsub-emulator
+    spec:
+      containers:
+      - name: pubsub-emulator
+        image: knarz/pubsub-emulator:latest
+        imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pubsub-emulator
+  labels:
+    app: pubsub-emulator
+spec:
+  ports:
+  - port: 8085
+    targetPort: 8085
+    protocol: TCP
+    name: pubsub
+  selector:
+    app: pubsub-emulator
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: pub-sub-operator
 spec:
   replicas: 1
@@ -14,20 +50,82 @@ spec:
     spec:
       serviceAccountName: pub-sub-operator
       containers:
-        - name: pub-sub-operator
-          # Replace this with the built image name
-          image: REPLACE_IMAGE
-          command:
-          - pub-sub-operator
-          imagePullPolicy: Always
-          env:
-            - name: WATCH_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
-            - name: OPERATOR_NAME
-              value: "pub-sub-operator"
+      - name: pub-sub-operator
+        image: chrisshawrootcapital/pub-sub-operator:latest
+        imagePullPolicy: Always
+        env:
+        - name: GOOGLE_PROJECT_ID
+          valueFrom:
+            configMapKeyRef:
+              name: pub-sub-operator-config
+              key: GOOGLE_PROJECT_ID
+        - name: GOOGLE_PUBSUB_API_ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: pub-sub-operator-config
+              key: GOOGLE_PUBSUB_API_ENDPOINT
+        - name: KUBE_CONFIG_ROOT_DIR
+          valueFrom:
+            configMapKeyRef:
+              name: pub-sub-operator-config
+              key: KUBE_CONFIG_ROOT_DIR
+        # - name: KUBE_CONFIG_CLUSTERS
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: pub-sub-operator-config
+        #       key: KUBE_CONFIG_CLUSTERS
+        # - name: KUBE_CONFIG_CONTEXTS
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: pub-sub-operator-config
+        #       key: KUBE_CONFIG_CONTEXTS
+        # - name: KUBE_CONFIG_USERS
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: pub-sub-operator-config
+        #       key: KUBE_CONFIG_USERS
+        # - name: KUBE_CONFIG_CURRENT_CONTEXT
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: pub-sub-operator-config
+        #       key: KUBE_CONFIG_CURRENT_CONTEXT
+        volumeMounts:
+        - name: pub-sub-secret
+          mountPath: "/opt/kube"
+          readOnly: true
+        - mountPath: /opt/config
+          name: config
+      volumes:
+      - name: pub-sub-secret
+        secret:
+          secretName: pub-sub-secret
+      - name: config
+        configMap:
+          name: pub-sub-operator-config
+          items:
+          - key: default.yaml
+            path: default.yaml
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pub-sub-operator-config
+data:
+  GOOGLE_PROJECT_ID: 'local-project'
+  GOOGLE_PUBSUB_API_ENDPOINT: 'localhost:8085'
+  KUBE_CONFIG_ROOT_DIR: '/opt/kube'
+  default.yaml: |-
+    KUBE_CONFIG_CLUSTERS:
+    - caFile: '/opt/kube/ca_test.crt'
+      name: 'minikube'
+      server: 'https://0.0.0.0:8443'
+      skipTLSVerify: false
+    KUBE_CONFIG_CONTEXTS:
+    - cluster: 'minikube'
+      name: 'minikube'
+      user: 'minikube'
+    KUBE_CONFIG_USERS:
+    - certFile: '/opt/kube/client_test.crt'
+      keyFile: '/opt/kube/client_test.key'
+      name: 'minikube'
+    KUBE_CONFIG_CURRENT_CONTEXT: 'minikube'

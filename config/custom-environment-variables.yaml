@@ -1,0 +1,29 @@
+google:
+  projectId: GOOGLE_PROJECT_ID
+  pubsub:
+    apiEndpoint: GOOGLE_PUBSUB_API_ENDPOINT
+
+kube:
+  config:
+    rootDirectory: KUBE_CONFIG_ROOT_DIR
+    clusters:
+      __name: 'KUBE_CONFIG_CLUSTERS'
+      __format: 'json'
+    # Example
+    # - caFile: '/Users/chrisshaw/.minikube/ca.crt'
+    #   name: 'minikube'
+    #   server: 'https://192.168.99.104:8443'
+    #   skipTLSVerify: false
+    contexts:
+      __name: 'KUBE_CONFIG_CONTEXTS'
+      __format: 'json'
+    # - cluster: 'minikube'
+    #   name: 'minikube'
+    #   user: 'minikube'
+    users:
+      __name: 'KUBE_CONFIG_USERS'
+      __format: 'json'
+    # - certFile: '/Users/chrisshaw/.minikube/client.crt'
+    #   keyFile: '/Users/chrisshaw/.minikube/client.key'
+    #   name: 'minikube'
+    currentContext: KUBE_CONFIG_CURRENT_CONTEXT

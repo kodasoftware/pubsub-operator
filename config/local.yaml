@@ -1,0 +1,17 @@
+kube:
+  config:
+    rootDirectory: '/opt/kube'
+    clusters:
+    - caFile: '/opt/kube/ca_test.crt'
+      name: 'minikube'
+      server: 'http://pubsub-emulator.default.svc.local:8443'
+      skipTLSVerify: false
+    contexts:
+    - cluster: 'minikube'
+      name: 'minikube'
+      user: 'minikube'
+    users:
+    - certFile: '/opt/kube/client_test.crt'
+      keyFile: '/opt/kube/client_test.key'
+      name: 'minikube'
+    currentContext: 'minikube'

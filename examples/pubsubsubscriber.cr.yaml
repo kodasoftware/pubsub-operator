@@ -1,0 +1,7 @@
+apiVersion: pubsub.k8s.io/v1alpha1
+kind: PubSubSubscription
+metadata:
+  name: example-pubsubtopic-subscription
+spec:
+  topic: example-pubsubtopic
+  endpoint: ''
