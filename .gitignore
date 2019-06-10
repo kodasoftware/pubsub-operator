@@ -1,0 +1,7 @@
+node_modules
+!/src/*
+!/deploy/*
+!package.json
+!package-lock.json
+!README.md
+!tsconfig.json

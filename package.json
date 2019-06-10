@@ -1,0 +1,20 @@
+{
+  "name": "pub-sub-operator",
+  "version": "0.0.0",
+  "description": "A set of kubernetes operators to create GCloud Pub/Sub Topics and Subscribers.",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "tsc": "^1.20150623.0",
+    "typescript": "^3.5.1"
+  },
+  "dependencies": {
+    "@google-cloud/pubsub": "^0.29.1",
+    "ts-node": "^8.2.0"
+  }
+}
