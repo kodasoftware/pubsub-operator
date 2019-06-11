@@ -33,6 +33,7 @@ spec:
     name: pubsub
   selector:
     app: pubsub-emulator
+  type: NodePort
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -109,3 +110,19 @@ data:
       keyFile: '/opt/kube/client_test.key'
       name: 'minikube'
     KUBE_CONFIG_CURRENT_CONTEXT: 'minikube'
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pubsub-emulator
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+ rules:
+ - host: pubsub-emulator.localhost
+   http:
+     paths:
+     - path: /*
+       backend:
+         serviceName: pubsub-emulator
+         servicePort: 8085

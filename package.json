@@ -4,6 +4,7 @@
   "description": "A set of kubernetes operators to create GCloud Pub/Sub Topics and Subscribers.",
   "main": "index.js",
   "scripts": {
+    "cli": "ts-node src/cli.ts",
     "start": "ts-node src/index.ts",
     "start:minikube": "NODE_ENV=minikube $npm_execpath run start",
     "test": "$npm_execpath run test:setup && $npm_execpath run test:run && $npm_execpath run test:cleanup",
@@ -27,6 +28,8 @@
   "dependencies": {
     "@google-cloud/pubsub": "^0.29.1",
     "@kubernetes/client-node": "^0.10.0",
+    "command-line-args": "^5.1.1",
+    "command-line-usage": "^5.0.5",
     "config": "^3.1.0",
     "js-yaml": "^3.13.1",
     "ts-node": "^8.2.0"

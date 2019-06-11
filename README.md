@@ -42,5 +42,24 @@ kubectl apply -f deploy/operator.yaml
 kubectl apply -f examples/pubsubtopic.cr.yaml
 
 # Create a subscriber
-kubectl apply -f examples/pubsubsubscriber.cr.yaml
+kubectl apply -f examples/pubsubsubscription.cr.yaml
+
+# Verify custom resources
+kubectl get pubsubtopics
+kubectl get pubsubsubscriptions
 ```
+
+# Running tests
+
+```
+npm install
+npm run test
+```
+
+# Running CLI
+
+```
+NODE_ENV=<environment config> npm run cli <command> <args>
+```
+
+To get a help view of the command and options execute `npm run cli`.

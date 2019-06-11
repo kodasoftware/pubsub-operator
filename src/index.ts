@@ -8,14 +8,21 @@ import {
   handleSubscriptionEnd,
 } from './controller';
 
+const GROUP = 'pubsub.k8s.io';
+const VERSION = 'v1alpha1';
+const RESOURCES = {
+  TOPICS: 'pubsubtopics',
+  SUBSCRIPTIONS: 'pubsubsubscriptions',
+};
+
 const client = pubsub(configuration);
 const watchPubSubTopics = (config) => watch(
-  config, 'pubsub.k8s.io', 'v1alpha1', 'pubsubtopics',
+  config, GROUP, VERSION, RESOURCES.TOPICS,
   handleTopicCustomResource(client),
   handleTopicEnd(client, watchPubSubTopics),
 );
 const watchPubSubSubscriptions = (config) => watch(
-  config, 'pubsub.k8s.io', 'v1alpha1', 'pubsubsubscriptions',
+  config, GROUP, VERSION, RESOURCES.SUBSCRIPTIONS,
   handleSubscriptionCustomResource(client),
   handleSubscriptionEnd(client, watchPubSubSubscriptions),
 );
