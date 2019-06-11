@@ -1,12 +1,19 @@
-import { pubsub } from './pubsub';
 import { configureConfig, watch } from './k8s';
 import { configuration, kubeConfig } from './config';
 import {
   handleTopicCustomResource,
-  handleTopicEnd,
   handleSubscriptionCustomResource,
-  handleSubscriptionEnd,
+  handleResourceEnd,
 } from './controller';
+import {
+  pubsub,
+  createTopic,
+  getTopics,
+  getSubscriptions,
+  createSubscription,
+  modifySubscription,
+  deleteSubscription
+} from './pubsub';
 
 const GROUP = 'pubsub.k8s.io';
 const VERSION = 'v1alpha1';
@@ -14,17 +21,25 @@ const RESOURCES = {
   TOPICS: 'pubsubtopics',
   SUBSCRIPTIONS: 'pubsubsubscriptions',
 };
-
 const client = pubsub(configuration);
+const logger = console;
+
 const watchPubSubTopics = (config) => watch(
   config, GROUP, VERSION, RESOURCES.TOPICS,
-  handleTopicCustomResource(client),
-  handleTopicEnd(client, watchPubSubTopics),
+  handleTopicCustomResource(client, createTopic, logger),
+  handleResourceEnd(client, getTopics, () => watchPubSubTopics(config), logger),
 );
 const watchPubSubSubscriptions = (config) => watch(
   config, GROUP, VERSION, RESOURCES.SUBSCRIPTIONS,
-  handleSubscriptionCustomResource(client),
-  handleSubscriptionEnd(client, watchPubSubSubscriptions),
+  handleSubscriptionCustomResource(
+    client,
+    createTopic,
+    createSubscription,
+    modifySubscription,
+    deleteSubscription,
+    logger,
+  ),
+  handleResourceEnd(client, getSubscriptions, () => watchPubSubSubscriptions(config), logger),
 );
 
 async function main() {
@@ -38,6 +53,6 @@ async function main() {
 main()
   .then(() => process.on('SIGINT', () => process.exit(0)))
   .catch((err) => {
-    console.error(err);
+    logger.error(err);
     process.exit(1);
   });

@@ -18,14 +18,13 @@ export async function createSubscription(
 ) {
   try {
     const config = { pushConfig: { pushEndpoint } };
-    const subscription = await pubsub.topic(topicName).createSubscription(subscriptionName, config);
-    return subscription[1];
+    await pubsub.topic(topicName).createSubscription(subscriptionName, config);
   } catch (err) {
-    if (err.code === ALREADY_EXISTS) {
-      return getSubscription(pubsub, subscriptionName);
+    if (err.code !== ALREADY_EXISTS) {
+      throw err;
     }
-    throw err;
   }
+  return getSubscription(pubsub, subscriptionName);
 }
 
 export function modifySubscription(
