@@ -1,8 +1,12 @@
 import * as k8s from '@kubernetes/client-node';
 
-export function configureConfig(options) {
+export function configureConfig(options?: any) {
   const config = new k8s.KubeConfig();
-  config.loadFromOptions(options);
+  if (options) {
+    config.loadFromOptions(options);
+  } else {
+    config.loadFromDefault();
+  }
   return config;
 }
 

@@ -3,20 +3,20 @@ google:
   pubsub:
     apiEndpoint: localhost:8085
 
-kube:
-  config:
-    rootDirectory: '/Users/chrisshaw/.kube'
-    clusters:
-    - caFile: '/Users/chrisshaw/.minikube/ca.crt'
-      name: 'minikube'
-      server: 'https://192.168.99.104:8443'
-      skipTLSVerify: false
-    contexts:
-    - cluster: 'minikube'
-      name: 'minikube'
-      user: 'minikube'
-    users:
-    - certFile: '/Users/chrisshaw/.minikube/client.crt'
-      keyFile: '/Users/chrisshaw/.minikube/client.key'
-      name: 'minikube'
-    currentContext: 'minikube'
+# kube:
+#   config:
+#     # rootDirectory: '/Users/chrisshaw/.kube'
+#     # clusters:
+#     # - caFile: '/Users/chrisshaw/.minikube/ca.crt'
+#     #   name: 'minikube'
+#     #   server: 'https://192.168.99.104:8443'
+#     #   skipTLSVerify: false
+#     # contexts:
+#     # - cluster: 'minikube'
+#     #   name: 'minikube'
+#     #   user: 'minikube'
+#     # users:
+#     # - certFile: '/Users/chrisshaw/.minikube/client.crt'
+#     #   keyFile: '/Users/chrisshaw/.minikube/client.key'
+#     #   name: 'minikube'
+#     # currentContext: 'minikube'

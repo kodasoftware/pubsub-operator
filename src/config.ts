@@ -14,7 +14,7 @@ if (config.has(API_ENDPOINT_KEY)) {
   );
 }
 
-const kubeConfig = config.util.toObject(config.get('kube.config'));
+const kubeConfig = config.has('kube.config') ? config.util.toObject(config.get('kube.config')) : null;
 
 export {
   configuration,

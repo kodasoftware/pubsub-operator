@@ -5,11 +5,13 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node src/index.ts",
+    "start:minikube": "NODE_ENV=minikube $npm_execpath run start",
     "test": "$npm_execpath run test:setup && $npm_execpath run test:run && $npm_execpath run test:cleanup",
     "test:setup": "docker-compose up -d",
     "test:cleanup": "docker-compose down",
     "test:run": "mocha -r ts-node/register --recursive 'test/**/*.spec.{t,j}s'",
-    "build:docker": "docker build -t c5haw/pub-sub-operator:latest ."
+    "build:docker": "docker build -t chrisshawrootcapital/pub-sub-operator:latest .",
+    "publish:docker": "docker push chrisshawrootcapital/pub-sub-operator:latest"
   },
   "author": "",
   "license": "UNLICENSED",
