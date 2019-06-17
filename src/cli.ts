@@ -6,6 +6,7 @@ import {
   pubsub,
   getTopics,
   createTopic,
+  getSubscription,
   getSubscriptions,
   createSubscription,
   modifySubscription,
@@ -16,6 +17,7 @@ const client = pubsub(configuration);
 const commands = {
   getTopics,
   createTopic,
+  getSubscription,
   getSubscriptions,
   createSubscription,
   modifySubscription,
@@ -24,6 +26,7 @@ const commands = {
 const commandOptions = [
   'getTopics',
   'createTopic',
+  'getSubscription',
   'getSubscriptions',
   'createSubscription',
   'modifySubscription',
@@ -49,6 +52,7 @@ const sections = [{
   content: [
     '{bold getTopics} - Returns all topics',
     '{bold createTopic} - Creates a topic',
+    '{bold getSubscription} - Return a single subscription',
     '{bold getSubscriptions} - Return all subscriptions',
     '{bold createSubscription} - Creates a subscription',
     '{bold modifySubscription} - Modifies an existing subscription',
@@ -80,6 +84,8 @@ function showHelp() {
 
 const args = cli(options);
 
+console.log(args);
+
 if (!args.command || !commandOptions.includes(args.command)) {
   showHelp();
   process.exit(0);
@@ -105,6 +111,14 @@ if (executable === createTopic) {
 
 if (executable === getSubscriptions) {
   executable(client).then(console.log);
+}
+
+if (executable === getSubscription) {
+  if (!args.subscription) {
+    console.error('No subscription set');
+    process.exit(1);
+  }
+  executable(client, args.subscription).then(console.log);
 }
 
 if (executable === createSubscription || executable === modifySubscription) {
