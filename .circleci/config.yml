@@ -26,7 +26,8 @@ workflows:
           requires:
             - publish
           filters:
-            branches: master
+            branches: 
+              only: master
       - deploy:
           context: Sauce
           requires:
