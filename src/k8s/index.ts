@@ -11,7 +11,7 @@ export async function getCustomObject(
 ) {
   try {
     const response = await client.listClusterCustomObject(
-      group, version, resource, 'true', undefined, undefined, undefined, undefined, watch, {},
+      group, version, resource, 'true', undefined, undefined, undefined, undefined, watch,
     );
     return response;
   } catch (err) {

@@ -1,0 +1,334 @@
+#########################################
+# # # # PUBSUB-OPERATOR CIRCLE CI # # # #
+#########################################
+
+version: 2.1
+
+# 
+# Workflows
+# 
+workflows:
+  version: 2
+  publish:
+    jobs:
+      - build
+      - publish:
+          context: Sauce
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+  deploy_dev:
+    jobs:
+      - hold:
+          type: approval
+          requires:
+            - publish
+          filters:
+            branches: master
+      - deploy:
+          context: Sauce
+          requires:
+            - hold
+
+# 
+# Jobs
+# 
+jobs:
+  build:
+    executor: node
+    steps:
+      - checkout
+      - setup_remote_docker
+      - compile
+      # - lint
+      - test
+  publish:
+    executor: gcloud
+    steps:
+      - checkout
+      - fingerprint
+      - setup_remote_docker
+      - dependencies
+      - docker_login:
+          token: $GOOGLE_GCR_CREDENTIALS
+          hostname: gcr.io
+      - git_config:
+          email: $GIT_EMAIL
+          author: $GIT_NAME
+      - git_tag
+      - docker_build:
+          hostname: gcr.io
+          project_id: sauce-gcr--hawk
+          image: pubsub-operator
+          dockerfile_path: dist/Dockerfile
+      - docker_push:
+          hostname: gcr.io
+          project_id: sauce-gcr--hawk
+          image: pubsub-operator
+      - git_push_tags
+  deploy:
+    executor: gcloud
+    steps:
+      - checkout
+      - fingerprint
+      - dependencies
+      - gcloud_auth:
+          credentials: $GOOGLE_CREDENTIALS
+          project_id: $GOOGLE_PROJECT_ID
+          region: $GOOGLE_COMPUTE_REGION
+          ttl: 30m
+      - gcloud_ssh_setup:
+          ttl: 30m
+      - gcloud_ssh:
+          instance: $GOOGLE_BASTION_INSTANCE
+          zone: $GOOGLE_BASTION_ZONE
+          script: |
+            rm -rf pubsub-operator
+            ssh -T github.com -o "StrictHostKeyChecking no"
+            git clone git@github.com:sauce-consortia/pubsub-operator.git
+            gcloud container clusters get-credentials $GOOGLE_CLUSTER_NAME --region $GOOGLE_CLUSTER_REGION
+            kustomize build pubsub-operator/dist/overlays/dev | kubectl apply -f -
+
+# 
+# Executors
+# 
+executors:
+  node:
+    docker:
+      - image: node:10.18.0-alpine
+        name: node_10_18_0-alpine
+        environment:
+          GOOGLE_CREDENTIALS: $GOOGLE_CREDENTIALS
+          GOOGLE_GCR_CREDENTIALS: $GOOGLE_GCR_CREDENTIALS
+          GIT_EMAIL: circleci@dneg.com
+          GIT_NAME: CircleCI
+  gcloud:
+    docker:
+      - image: google/cloud-sdk
+        name: google_cloud_sdk
+        environment:
+          GIT_EMAIL: circleci@dneg.com
+          GIT_NAME: CircleCI
+          TAG: "$(cat package.json | grep '\"version\":' | sed -e 's/  \"version\": \"//' | sed -e 's/\",//')"
+          TF_CLI: https://releases.hashicorp.com/terraform/0.12.19/terraform_0.12.19_linux_amd64.zip
+          TF_ZIP: terraform_0.12.19_linux_amd64.zip
+          TF_ENVIRONMENT: dev
+
+# 
+# Commands
+# 
+commands:
+  fingerprint:
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "8f:71:c0:bf:ae:b5:05:3e:1e:73:51:f7:f8:4c:3a:fc"
+
+  # 
+  # Dependencies
+  # 
+  dependencies:
+    steps:
+      - run: |
+          # Install dependencies
+          apt-get update
+          apt -y install git dnsutils
+          sed -ie 's/# Host/Host/' /etc/ssh/ssh_config
+          sed -ie 's/#   ForwardAgent/  ForwardAgent/' /etc/ssh/ssh_config
+          sed -ie 's/  ForwardAgent no/  ForwardAgent yes/' /etc/ssh/ssh_config
+
+  # 
+  # npm commands
+  # 
+  lint:
+    steps:
+      - run: |
+          npm i
+          npm run lint
+  compile:
+    steps:
+      - run: |
+          npm i
+          npm run compile
+  test:
+    steps:
+      - run: |
+          npm i
+          npm test
+
+  #
+  # Docker (with node) commands
+  # 
+  docker_login:
+    parameters:
+      token:
+        type: string
+      hostname:
+        type: string
+    steps:
+      - run: docker login -u _json_key  -p "<< parameters.token >>" https://<< parameters.hostname >>
+  docker_build:
+    parameters:
+      npm_token:
+        type: string
+      hostname:
+        type: string
+      project_id:
+        type: string
+      image:
+        type: string
+      dockerfile_path:
+        type: string
+      context:
+        type: string
+        default: "."
+    steps:
+      - run: |
+          docker build --build-arg NPM_TOKEN=<< parameters.npm_token >> -t \
+            << parameters.hostname >>/<< parameters.project_id >>/<< parameters.image >>:$(cat package.json | grep '\"version\":' | sed -e 's/  \"version\": \"//' | sed -e 's/\",//') \
+            -f << parameters.dockerfile_path >> \
+            << parameters.context >>
+  docker_push:
+    parameters:
+      hostname:
+        type: string
+      project_id:
+        type: string
+      image:
+        type: string
+    steps:
+      - run: |
+          docker push << parameters.hostname>>/<< parameters.project_id >>/<< parameters.image >>:$(cat package.json | grep '\"version\":' | sed -e 's/  \"version\": \"//' | sed -e 's/\",//')
+
+  publish:
+    parameters:
+      token:
+        type: string
+      npm_token:
+        type: string
+      hostname:
+        type: string
+      project_id:
+        type: string
+      image:
+        type: string
+    steps:
+      - run: |
+          docker login -u _json_key  -p "<< parameters.token >>" https://<< parameters.hostname >>
+          docker build --build-arg NPM_TOKEN=<< parameters.npm_token >> -t << parameters.hostname >>/<< parameters.project_id >>/<< parameters.image >>:$(cat package.json | grep '\"version\":' | sed -e 's/  \"version\": \"//' | sed -e 's/\",//') -f dist/Dockerfile .
+          docker push << parameters.hostname>>/<< parameters.project_id >>/<< parameters.image >>:$(cat package.json | grep '\"version\":' | sed -e 's/  \"version\": \"//' | sed -e 's/\",//')
+
+  # 
+  # Git commands
+  # 
+  git_config:
+    parameters:
+      email:
+        type: string
+      author:
+        type: string
+    steps:
+      - run: |
+          git config user.email << parameters.email >> && git config user.name << parameters.author >>
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+  git_tag:
+    parameters:
+      when:
+        type: string
+        default: on_success
+    steps:
+      - run: 
+          command: |
+            git tag -f $(cat package.json | grep '\"version\":' | sed -e 's/  \"version\": \"//' | sed -e 's/\",//')
+          when: << parameters.when >>
+  git_push_tags:
+    steps:
+      - run: git push -f --tags
+  git_commit:
+    parameters:
+      message:
+        type: string
+      version_file:
+        type: string
+        default: VERSION
+      env:
+        type: string
+        default: dev
+      when:
+        type: string
+        default: on_success
+    steps:
+      - run: 
+          command: |
+            git add -A
+            git diff-index --quiet HEAD || git commit -am "<< parameters.message >>"
+          when: << parameters.when >>
+  git_push:
+    steps:
+      - run: git push origin HEAD:master
+
+  # 
+  # gcloud commands
+  # 
+  gcloud_auth:
+    parameters:
+      credentials:
+        type: string
+      project_id:
+        type: string
+      region:
+        type: string
+      ttl:
+        type: string
+        default: 30m
+    steps:
+      - run: |
+          # Authorize service account with token
+          echo << parameters.credentials >> | gcloud auth activate-service-account --key-file=-
+          #  Set project config
+          gcloud --quiet config set project << parameters.project_id >>
+          gcloud --quiet config set compute/region << parameters.region >>
+  gcloud_ssh_setup:
+    parameters:
+      ttl:
+        type: string
+    steps:
+      - run: |
+          # Generate public key for host
+          ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
+          # Generate config for ssh users
+          gcloud --quiet compute config-ssh --force-key-file-overwrite
+          # Add public SSH key to os-login (30m duration)
+          gcloud compute os-login ssh-keys add --key-file ~/.ssh/google_compute_engine.pub --ttl << parameters.ttl >>
+          # Allow AgentForward to bastion
+          sed -ie 's/# Host */Host */' /etc/ssh/ssh_config
+          sed -ie 's/#  ForwardAgent no/  ForwardAgent yes/' /etc/ssh/ssh_config
+          sed -ie 's/#  ForwardAgent yes/  ForwardAgent yes/' /etc/ssh/ssh_config
+  gcloud_ssh:
+    parameters:
+      instance:
+        type: string
+      zone:
+        type: string
+      script:
+        type: string
+        default: '# Completed SSH script'
+    steps:
+      - run: |
+          # SSH to bastion instance
+          gcloud compute ssh << parameters.instance >> --zone=<< parameters.zone >> -- -A \<< EOF
+          # Run SSH script
+          << parameters.script >>
+          EOF
+  gcloud_kubectl_auth:
+    parameters:
+      cluster_name:
+        type: string
+      region:
+        type: string
+    steps:
+      - run: |
+          # Authorize kubectl acccess to cluster
+          gcloud container clusters get-credentials << parameters.cluster_name >> --region << parameters.region >>

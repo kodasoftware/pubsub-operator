@@ -1,18 +1,19 @@
 {
-  "name": "pub-sub-operator",
-  "version": "0.0.0",
-  "description": "A set of kubernetes operators to create GCloud Pub/Sub Topics and Subscribers.",
+  "name": "pubsub-operator",
+  "version": "0.1.0",
+  "description": "A Kubernetes Operator to manage GCloud Pub/Sub Topics and Subscriptions.",
   "main": "index.js",
   "scripts": {
     "cli": "ts-node src/cli.ts",
     "start": "ts-node src/index.ts",
     "start:minikube": "NODE_ENV=minikube $npm_execpath run start",
     "test": "$npm_execpath run test:setup && $npm_execpath run test:run && $npm_execpath run test:cleanup",
+    "build": "tsc -p tsconfig.json --outDir build",
+    "compile": "npm run build && npm run post-compile",
+    "post-compile": "cp package.json package-lock.json build",
     "test:setup": "docker-compose up -d",
     "test:cleanup": "docker-compose down",
-    "test:run": "mocha -r ts-node/register --recursive 'test/**/*.spec.{t,j}s'",
-    "build:docker": "docker build -t chrisshawrootcapital/pub-sub-operator:latest .",
-    "publish:docker": "docker push chrisshawrootcapital/pub-sub-operator:latest"
+    "test:run": "mocha -r ts-node/register --recursive 'test/**/*.spec.{t,j}s'"
   },
   "author": "",
   "license": "UNLICENSED",
@@ -28,7 +29,7 @@
   },
   "dependencies": {
     "@google-cloud/pubsub": "^0.29.1",
-    "@kubernetes/client-node": "^0.10.0",
+    "@kubernetes/client-node": "^0.10.3",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^5.0.5",
     "config": "^3.1.0",

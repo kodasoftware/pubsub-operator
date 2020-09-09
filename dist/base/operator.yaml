@@ -1,0 +1,133 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: pubsub-emulator
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: pubsub-emulator
+#       name: pubsub-emulator
+#   template:
+#     metadata:
+#       labels:
+#         app: pubsub-emulator
+#         name: pubsub-emulator
+#     spec:
+#       containers:
+#       - name: pubsub-emulator
+#         image: knarz/pubsub-emulator:latest
+#         imagePullPolicy: Always
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: pubsub-emulator
+#   labels:
+#     app: pubsub-emulator
+# spec:
+#   ports:
+#   - port: 8085
+#     targetPort: 8085
+#     protocol: TCP
+#     name: pubsub
+#   selector:
+#     app: pubsub-emulator
+#   type: NodePort
+# ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pubsub-operator
+  labels:
+    app: pubsub-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pubsub-operator
+  template:
+    metadata:
+      labels:
+        app: pubsub-operator
+    spec:
+      serviceAccountName: pubsub-operator
+      containers:
+      - name: pubsub-operator
+        image: gcr.io/sauce-gcr--hawk/pubsub-operator
+        imagePullPolicy: Always
+        envFrom:
+          - configMapRef:
+              name: pubsub-operator-config
+        # env:
+        # - name: GOOGLE_PROJECT_ID
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: pubsub-operator-config
+        #       key: GOOGLE_PROJECT_ID
+        # - name: GOOGLE_PUBSUB_API_ENDPOINT
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: pubsub-operator-config
+        #       key: GOOGLE_PUBSUB_API_ENDPOINT
+        # - name: KUBE_CONFIG_ROOT_DIR
+        #   valueFrom:
+        #     configMapKeyRef:
+        #       name: pubsub-operator-config
+        #       key: KUBE_CONFIG_ROOT_DIR
+        volumeMounts:
+        - name: pubsub-secret
+          mountPath: "/opt/kube"
+          readOnly: true
+        - mountPath: /opt/config
+          name: config
+      volumes:
+      - name: pubsub-secret
+        secret:
+          secretName: pubsub-secret
+      - name: config
+        configMap:
+          name: pubsub-operator-config
+          items:
+          - key: default.yaml
+            path: default.yaml
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: pubsub-operator-config
+# data:
+#   GOOGLE_PROJECT_ID: 'local-project'
+#   GOOGLE_PUBSUB_API_ENDPOINT: 'pubsub-emulator.default.svc.cluster.local:8085'
+#   KUBE_CONFIG_ROOT_DIR: '/opt/kube'
+#   default.yaml: |-
+#     KUBE_CONFIG_CLUSTERS:
+#     - caFile: '/opt/kube/ca_test.crt'
+#       name: 'minikube'
+#       server: 'https://0.0.0.0:8443'
+#       skipTLSVerify: false
+#     KUBE_CONFIG_CONTEXTS:
+#     - cluster: 'minikube'
+#       name: 'minikube'
+#       user: 'minikube'
+#     KUBE_CONFIG_USERS:
+#     - certFile: '/opt/kube/client_test.crt'
+#       keyFile: '/opt/kube/client_test.key'
+#       name: 'minikube'
+#     KUBE_CONFIG_CURRENT_CONTEXT: 'minikube'
+# ---
+# apiVersion: extensions/v1beta1
+# kind: Ingress
+# metadata:
+#   name: pubsub-emulator
+#   annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /
+# spec:
+#  rules:
+#  - host: pubsub-emulator.localhost
+#    http:
+#      paths:
+#      - path: /*
+#        backend:
+#          serviceName: pubsub-emulator
+#          servicePort: 8085
