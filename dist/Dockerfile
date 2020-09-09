@@ -13,8 +13,5 @@ WORKDIR /opt/app
 
 COPY --from=build build/* ./
 COPY config/ config/
-EXPOSE 8080
 
-
-
-CMD ["npm", "start"]
+CMD ["node", "index.js"]
