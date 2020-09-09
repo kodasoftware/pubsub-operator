@@ -97,8 +97,8 @@ jobs:
 executors:
   node:
     docker:
-      - image: node:10.18.0-alpine
-        name: node_10_18_0-alpine
+      - image: node:10.18.0
+        name: node_10_18_0
         environment:
           GOOGLE_CREDENTIALS: $GOOGLE_CREDENTIALS
           GOOGLE_GCR_CREDENTIALS: $GOOGLE_GCR_CREDENTIALS
@@ -144,6 +144,7 @@ commands:
       - run:
           name: Install Docker Compose
           command: |
+            apt-get -yqq install curl
             set -x
             curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
             chmod +x /usr/local/bin/docker-compose
