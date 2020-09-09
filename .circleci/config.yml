@@ -21,17 +21,15 @@ workflows:
               only: master
   deploy_dev:
     jobs:
-      - hold:
+      - approve:
           type: approval
-          requires:
-            - publish
           filters:
             branches: 
               only: master
       - deploy:
           context: Sauce
           requires:
-            - hold
+            - approve
 
 # 
 # Jobs
