@@ -172,8 +172,6 @@ commands:
       - run: docker login -u _json_key  -p "<< parameters.token >>" https://<< parameters.hostname >>
   docker_build:
     parameters:
-      npm_token:
-        type: string
       hostname:
         type: string
       project_id:
@@ -187,7 +185,7 @@ commands:
         default: "."
     steps:
       - run: |
-          docker build --build-arg NPM_TOKEN=<< parameters.npm_token >> -t \
+          docker build -t \
             << parameters.hostname >>/<< parameters.project_id >>/<< parameters.image >>:$(cat package.json | grep '\"version\":' | sed -e 's/  \"version\": \"//' | sed -e 's/\",//') \
             -f << parameters.dockerfile_path >> \
             << parameters.context >>
