@@ -2,7 +2,9 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   creationTimestamp: null
-  name: pub-sub-operator
+  name: pubsub-operator
+  labels:
+    app: pubsub-operator
 rules:
 - apiGroups:
   - ""
@@ -35,7 +37,7 @@ rules:
 - apiGroups:
   - apps
   resourceNames:
-  - pub-sub-operator
+  - pubsub-operator
   resources:
   - deployments/finalizers
   verbs:

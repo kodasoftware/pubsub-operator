@@ -2,4 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: default
 resources:
-  -
+  - customresourcedefinition.yaml
+  - serviceaccount.yaml
+  - role.yaml
+  - rolebinding.yaml
+  - deployment.yaml

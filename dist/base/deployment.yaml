@@ -14,24 +14,24 @@ spec:
       labels:
         app: pubsub-operator
     spec:
-      serviceAccountName: pubsub-operator
       containers:
       - name: pubsub-operator
         image: gcr.io/sauce-gcr--hawk/pubsub-operator
         imagePullPolicy: Always
-        volumeMounts:
-        - name: pubsub-secret
-          mountPath: "/opt/kube"
-          readOnly: true
-        - name: config
-          mountPath: /opt/config
-      volumes:
-      - name: pubsub-secret
-        secret:
-          secretName: pubsub-secret
-      - name: config
-        configMap:
-          name: pubsub-operator-config
-          items:
-          - key: default.yaml
-            path: default.yaml
+        command:
+          - /bin/sh
+          - -c
+          - node index.js pubsubtopics pubsub.k8s.io v1alpha1
+        envFrom:
+          - configMapRef:
+              name: pubsub-operator-env-vars
+      - name: pubsub-operator
+        image: gcr.io/sauce-gcr--hawk/pubsub-operator
+        imagePullPolicy: Always
+        command:
+          - /bin/sh
+          - -c
+          - node index.js pubsubsubscriptions pubsub.k8s.io v1alpha1
+        envFrom:
+          - configMapRef:
+              name: pubsub-operator-env-vars
