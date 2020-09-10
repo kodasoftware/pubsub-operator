@@ -28,7 +28,7 @@ workflows:
             branches: 
               only: master
       - deploy:
-          context: Sauce
+          context: dev
           requires:
             - approve
 
