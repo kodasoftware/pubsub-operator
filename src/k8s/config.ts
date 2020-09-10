@@ -5,7 +5,7 @@ export function configureConfig(options?: any) {
   if (options) {
     config.loadFromOptions(options);
   } else {
-    config.loadFromDefault();
+    config.loadFromCluster();
   }
   return config;
 }

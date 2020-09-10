@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pubsub-operator
+  labels:
+    app: pubsub-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pubsub-operator
+  template:
+    metadata:
+      labels:
+        app: pubsub-operator
+    spec:
+      serviceAccountName: pubsub-operator
+      containers:
+      - name: pubsub-operator
+        image: gcr.io/sauce-gcr--hawk/pubsub-operator
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: pubsub-secret
+          mountPath: "/opt/kube"
+          readOnly: true
+        - name: config
+          mountPath: /opt/config
+      volumes:
+      - name: pubsub-secret
+        secret:
+          secretName: pubsub-secret
+      - name: config
+        configMap:
+          name: pubsub-operator-config
+          items:
+          - key: default.yaml
+            path: default.yaml

@@ -16,7 +16,10 @@ if (config.has(API_ENDPOINT_KEY)) {
 
 const kubeConfig = config.has('kube.config') ? config.util.toObject(config.get('kube.config')) : null;
 
+const cfg = config.util.toObject()
+
 export {
+  cfg,
   configuration,
   kubeConfig,
 }

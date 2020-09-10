@@ -1,19 +1,6 @@
-import { configureConfig, watch } from './k8s';
-import { configuration, kubeConfig } from './config';
-import {
-  handleTopicCustomResource,
-  handleSubscriptionCustomResource,
-  handleResourceEnd,
-} from './controller';
-import {
-  pubsub,
-  createTopic,
-  getTopics,
-  getSubscriptions,
-  createSubscription,
-  modifySubscription,
-  deleteSubscription
-} from './pubsub';
+import Watcher from './watcher'
+import { kubeConfig } from './config'
+import { handleTopicCustomResource, handleSubscriptionCustomResource } from './controller';
 
 const GROUP = 'pubsub.k8s.io';
 const VERSION = 'v1alpha1';
@@ -21,38 +8,38 @@ const RESOURCES = {
   TOPICS: 'pubsubtopics',
   SUBSCRIPTIONS: 'pubsubsubscriptions',
 };
-const client = pubsub(configuration);
-const logger = console;
-
-const watchPubSubTopics = (config) => watch(
-  config, GROUP, VERSION, RESOURCES.TOPICS,
-  handleTopicCustomResource(client, createTopic, logger),
-  handleResourceEnd(client, getTopics, () => watchPubSubTopics(config), logger),
-);
-const watchPubSubSubscriptions = (config) => watch(
-  config, GROUP, VERSION, RESOURCES.SUBSCRIPTIONS,
-  handleSubscriptionCustomResource(
-    client,
-    createTopic,
-    createSubscription,
-    modifySubscription,
-    deleteSubscription,
-    logger,
-  ),
-  handleResourceEnd(client, getSubscriptions, () => watchPubSubSubscriptions(config), logger),
-);
 
 async function main() {
-  const config = configureConfig(kubeConfig);
-  await Promise.all([
-    watchPubSubTopics(config),
-    watchPubSubSubscriptions(config),
-  ]);
+  const [resource, group, version] = process.argv.slice(2)
+  const watcher = new Watcher(kubeConfig)
+
+  if (!resource) {
+    throw Error('You must provide a RESOURCE as a parameter to watch a resource')
+  }
+
+  let handler
+  switch (resource) {
+    case RESOURCES.TOPICS:
+      handler = handleTopicCustomResource
+      break
+    case RESOURCES.SUBSCRIPTIONS:
+      handler = handleSubscriptionCustomResource
+      break
+    default:
+      handler = (phase: string, data: string) => {
+        console.log('Fallback handler for unknown resource "' + resource + '".')
+        console.log('Phase', phase)
+        console.log('Data', data)
+      }
+  }
+  
+  await watcher.watch(group || GROUP, version || VERSION, resource, handler)
 }
 
-main()
-  .then(() => process.on('SIGINT', () => process.exit(0)))
-  .catch((err) => {
-    logger.error(err);
-    process.exit(1);
-  });
+process.on('SIGINT', () => process.exit(0))
+main().catch(err => {
+  if (err) {
+    console.error(err)
+  }
+  process.exit(1)
+})
