@@ -4,8 +4,8 @@ WORKDIR /
 
 COPY src/ src/
 COPY package.json package-lock.json ./
-COPY package-lock.json /opt/app
 RUN npm i
+RUN npm run compile
 
 FROM node:10.17-alpine AS runtime
 
