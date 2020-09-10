@@ -12,7 +12,7 @@ FROM node:10.17-alpine AS runtime
 WORKDIR /opt/app
 
 COPY --from=build /build/ ./
-# COPY config/ config/
-# RUN npm i
+COPY config/ config/
+RUN npm i
 
-# CMD ["/bin/sh", "-c", "node index.js"]
+CMD ["/bin/sh", "-c", "node index.js"]
