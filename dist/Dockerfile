@@ -7,12 +7,12 @@ COPY tsconfig.base.json tsconfig.json package.json package-lock.json ./
 RUN npm i
 RUN npm run compile
 
-FROM node:10.18-alpine AS runtime
+FROM node:10.17-alpine AS runtime
 
 WORKDIR /opt/app
 
-COPY --from=build /build/* ./
-COPY config/ config/
-RUN npm i
+COPY --from=build /build/ ./
+# COPY config/ config/
+# RUN npm i
 
-CMD ["/bin/sh", "-c", "node index.js"]
+# CMD ["/bin/sh", "-c", "node index.js"]
