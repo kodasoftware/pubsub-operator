@@ -28,6 +28,6 @@ export function watch(
   done: (err: any) => void,
 ) {
   const watcher = new k8s.Watch(config);
-  console.log(watcher)
+  console.log(watcher.config)
   return watcher.watch(`/apis/${group}/${version}/${resource}`, {}, callback, done);
 }
