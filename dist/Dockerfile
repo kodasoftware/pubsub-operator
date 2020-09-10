@@ -3,7 +3,7 @@ FROM node:10.17 AS build
 WORKDIR /
 
 COPY src/ src/
-COPY package.json package-lock.json ./
+COPY base.tsconfig.json tsconfig.json package.json package-lock.json ./
 RUN npm i
 RUN npm run compile
 
