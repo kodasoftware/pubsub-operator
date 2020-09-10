@@ -14,6 +14,7 @@ spec:
       labels:
         app: pubsub-operator
     spec:
+      serviceAccount: pubsub-operator
       containers:
       - name: pubsub-operator-topics
         image: gcr.io/sauce-gcr--hawk/pubsub-operator

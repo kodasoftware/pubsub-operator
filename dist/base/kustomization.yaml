@@ -3,6 +3,9 @@ kind: Kustomization
 namespace: default
 resources:
   - customresourcedefinition.yaml
+  - serviceaccount.yaml
+  - role.yaml
+  - rolebinding.yaml
   - deployment.yaml
 images:
   - name: gcr.io/sauce-gcr--hawk/pubsub-operator
