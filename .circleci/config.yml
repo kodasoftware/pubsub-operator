@@ -11,14 +11,15 @@ workflows:
   version: 2
   publish:
     jobs:
-      - build
-      - publish:
-          context: Sauce
-          requires:
-            - build
+      - approve:
+          type: approval
           filters:
             branches:
               only: master
+      - publish:
+          context: Sauce
+          requires:
+            - approve
   deploy_dev:
     jobs:
       - approve:
