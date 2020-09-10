@@ -2,9 +2,6 @@ kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: pubsub-operator
-subjects:
-- kind: ServiceAccount
-  name: pubsub-operator
 roleRef:
   kind: Role
   name: pubsub-operator

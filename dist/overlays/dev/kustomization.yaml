@@ -8,3 +8,14 @@ configMapGenerator:
     behavior: create
     envs:
       - .env
+patches:
+  - target:
+      group: rbac.authorization.k8s.io
+      version: v1
+      kind: RoleBinding
+    patch: |-
+      - op: add
+        path: /subjects
+        value:
+          - kind: User
+            name: k8s-service-account@sauce-k8s--yak.iam.gserviceaccount.com
