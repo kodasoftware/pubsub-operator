@@ -13,5 +13,6 @@ WORKDIR /opt/app
 
 COPY --from=build /build/* ./
 COPY config/ config/
+RUN npm i
 
 CMD ["node", "index.js"]
