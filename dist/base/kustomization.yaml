@@ -4,3 +4,6 @@ namespace: default
 resources:
   - customresourcedefinition.yaml
   - deployment.yaml
+images:
+  - name: gcr.io/sauce-gcr--hawk/pubsub-operator
+    newTag: 0.1.0
