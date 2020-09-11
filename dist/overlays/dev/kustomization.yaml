@@ -19,11 +19,11 @@ patches:
         value:
           - kind: User
             name: k8s-service-account@sauce-k8s--yak.iam.gserviceaccount.com
-  - target:
-      group: apps
-      version: v1
-      kind: Deployment
-    patch: |-
-      - op: add
-        path: /spec/template/spec/serviceAccount
-        value: k8s-service-account@sauce-k8s--yak.iam.gserviceaccount.com
+  # - target:
+  #     group: apps
+  #     version: v1
+  #     kind: Deployment
+  #   patch: |-
+  #     - op: add
+  #       path: /spec/template/spec/serviceAccount
+  #       value: k8s-service-account@sauce-k8s--yak.iam.gserviceaccount.com
