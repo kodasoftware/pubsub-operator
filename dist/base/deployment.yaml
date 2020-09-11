@@ -15,7 +15,7 @@ spec:
         app: pubsub-operator
     spec:
       containers:
-      - name: pubsub-operator-topics
+      - name: topics
         image: gcr.io/sauce-gcr--hawk/pubsub-operator
         imagePullPolicy: Always
         command:
@@ -25,7 +25,7 @@ spec:
         envFrom:
           - configMapRef:
               name: pubsub-operator-env-vars
-      - name: pubsub-operator-subscriptions
+      - name: subscriptions
         image: gcr.io/sauce-gcr--hawk/pubsub-operator
         imagePullPolicy: Always
         command:
