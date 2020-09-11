@@ -7,15 +7,15 @@ kube:
   config:
     rootDirectory: '/var/run/secrets/kubernetes.io/serviceaccount'
     clusters:
-    - name: 'cluster'
+    - name: 'gke_sauce-k8s--yak_europe-west2_sauce'
       caFile: '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
-      server: 'https://34.89.39.224'
+      server: 'https://10.20.0.1'
       skipTLSVerify: false
     contexts:
-    - name: 'cluster'
-      cluster: 'cluster'
+    - name: 'gke_sauce-k8s--yak_europe-west2_sauce'
+      cluster: 'gke_sauce-k8s--yak_europe-west2_sauce'
       user: 'pubsub-operator'
     users:
     - name: 'pubsub-operator'
       token: '/var/run/secrets/kubernetes.io/serviceaccount/token'
-    currentContext: 'cluster'
+    currentContext: 'gke_sauce-k8s--yak_europe-west2_sauce'
