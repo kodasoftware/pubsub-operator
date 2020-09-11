@@ -1,4 +1,3 @@
-import { configureConfig } from '../config';
 import { Watch } from '@kubernetes/client-node';
 
 class Watcher {
@@ -7,11 +6,12 @@ class Watcher {
     this.watcher = new Watch(kubeConfig)
   }
 
-  public async start(
+  public start(
     group: string, version: string, resource: string, handler: (phase: string, object: any) => void): Promise<void> {
-    while (true) {
-      await this.watcher.watch(`/apis/${group}/${version}/${resource}`, {}, handler, this.handleError)
-    }
+    return new Promise((res) => this.watcher.watch(`/apis/${group}/${version}/${resource}`, {}, handler, (err) => {
+      this.handleError(err)
+      res()
+    })).then(() => this.start(group, version, resource, handler))
   }
 
   private handleError(err?: any) {
