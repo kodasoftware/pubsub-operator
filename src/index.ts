@@ -20,9 +20,11 @@ async function main() {
   let handler
   switch (resource) {
     case RESOURCES.TOPICS:
+      console.log('Handling', RESOURCES.TOPICS, 'resources')
       handler = handleTopicCustomResource
       break
     case RESOURCES.SUBSCRIPTIONS:
+      console.log('Handling', RESOURCES.SUBSCRIPTIONS, 'resources')
       handler = handleSubscriptionCustomResource
       break
     default:
@@ -33,7 +35,9 @@ async function main() {
       }
   }
   
+  console.log('Watching', (group || GROUP) + '/' + (version || VERSION) + '/' + resource)
   await watcher.watch(group || GROUP, version || VERSION, resource, handler)
+  console.log('Finished watching', (group || GROUP) + '/' + (version || VERSION) + '/' + resource)
 }
 
 process.on('SIGINT', () => process.exit(0))
