@@ -38,6 +38,7 @@ async function main() {
   console.log('Watching', (group || GROUP) + '/' + (version || VERSION) + '/' + resource)
   await watcher.watch(group || GROUP, version || VERSION, resource, handler)
   console.log('Finished watching', (group || GROUP) + '/' + (version || VERSION) + '/' + resource)
+  return main()
 }
 
 process.on('SIGINT', () => process.exit(0))
