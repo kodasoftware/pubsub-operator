@@ -8,17 +8,46 @@ configMapGenerator:
     behavior: create
     envs:
       - .env
+  - name: pubsub-operator-default-config
+    behavior: create
+    files:
+      - default.yaml
 patches:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: pubsub-operator
+    patch: |-
+      - op: add
+        path: /spec/template/spec/volumes
+        value:
+          - name: config
+            configMap:
+              name: pubsub-operator-default-config
+      - op: add
+        path: /spec/template/spec/containers/0/volumeMounts
+        value:
+          - name: config
+            mountPath: /opt/app/config
+      - op: add
+        path: /spec/template/spec/containers/1/volumeMounts
+        value:
+          - name: config
+            mountPath: /opt/app/config
   - target:
       group: rbac.authorization.k8s.io
       version: v1
       kind: RoleBinding
     patch: |-
       - op: add
-        path: /subjects
-        value:
-          - kind: User
-            name: 891286530011-compute@developer.gserviceaccount.com
+        path: /subjects/1/namespace
+        value: dev
+  #     - op: add
+  #       path: /subjects
+  #       value:
+  #         - kind: User
+  #           name: 891286530011-compute@developer.gserviceaccount.com
   # - target:
   #     group: apps
   #     version: v1
