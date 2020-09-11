@@ -1,11 +1,6 @@
-import { configureConfig } from '../config';
 import { Watch } from '@kubernetes/client-node';
 
 class Watcher extends Watch {
-  constructor(kubeConfig?: any) {
-    super(configureConfig(kubeConfig))
-  }
-
   public start(
     group: string, version: string, resource: string, handler: (phase: string, object: any) => void): Promise<void> {
     return new Promise(async (res) => {
