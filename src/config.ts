@@ -1,4 +1,5 @@
 import * as config from 'config';
+import * as k8s from '@kubernetes/client-node';
 
 const PROJECT_ID_KEY = 'google.projectId';
 const API_ENDPOINT_KEY = 'google.pubsub.apiEndpoint';
@@ -15,8 +16,23 @@ if (config.has(API_ENDPOINT_KEY)) {
 }
 
 const kubeConfig = config.has('kube.config') ? config.util.toObject(config.get('kube.config')) : null;
-
 const cfg = config.util.toObject()
+
+export function configureConfig(options?: any) {
+  const config = new k8s.KubeConfig();
+  if (options) {
+    config.loadFromOptions(options);
+  } else {
+    config.loadFromCluster();
+  }
+  return config;
+}
+
+export function configureClient() {
+  const config = new k8s.KubeConfig();
+  config.loadFromDefault();
+  return config.makeApiClient(k8s.CustomObjectsApi);
+}
 
 export {
   cfg,
