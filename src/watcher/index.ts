@@ -1,10 +1,16 @@
+import { configureConfig } from '../config';
 import { Watch } from '@kubernetes/client-node';
 
-class Watcher extends Watch {
+class Watcher {
+  private readonly watcher: Watch
+  constructor(kubeConfig?: any) {
+    this.watcher = new Watch(kubeConfig)
+  }
+
   public start(
     group: string, version: string, resource: string, handler: (phase: string, object: any) => void): Promise<void> {
     return new Promise(async (res) => {
-      await this.watch(`/apis/${group}/${version}/${resource}`, {}, handler, this.handleError)
+      await this.watcher.watch(`/apis/${group}/${version}/${resource}`, {}, handler, this.handleError)
       res(await this.start(group, version, resource, handler))
     })
   }
