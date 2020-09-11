@@ -19,7 +19,7 @@ export class SubscriptionHandler extends Handler {
         await this.deleteSubscription(subscription)
         break
       default:
-        console.log('[SubscriptionHandler] Ignoring phase', phase)
+        console.log('[SubscriptionHandler] Ignoring phase', phase, 'and data', data)
     }
   }
 }

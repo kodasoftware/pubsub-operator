@@ -9,7 +9,7 @@ export class TopicHandler extends Handler {
         await this.createTopic(name)
         break
       default:
-        console.log('[TopicHandler] Ignorning phase', phase)
+        console.log('[TopicHandler] Ignorning phase', phase, 'and data', data)
         return
     }
   }
