@@ -35,14 +35,14 @@ patches:
         value:
           - name: config
             mountPath: /opt/app/config
-  - target:
-      group: rbac.authorization.k8s.io
-      version: v1
-      kind: RoleBinding
-    patch: |-
-      - op: add
-        path: /subjects/1/namespace
-        value: dev
+  # - target:
+  #     group: rbac.authorization.k8s.io
+  #     version: v1
+  #     kind: RoleBinding
+  #   patch: |-
+  #     - op: add
+  #       path: /subjects/0/namespace
+  #       value: dev
   #     - op: add
   #       path: /subjects
   #       value:
