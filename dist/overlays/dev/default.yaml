@@ -1,0 +1,21 @@
+google:
+  projectId: sauce-k8s--yak
+  pubsub:
+    apiEndpoint: https://pubsub.googleapis.com
+
+kube:
+  config:
+    rootDirectory: '/var/run/secrets/kubernetes.io/serviceaccount'
+    clusters:
+    - name: 'cluster'
+      caFile: '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+      server: 'https://34.89.39.224'
+      skipTLSVerify: false
+    contexts:
+    - name: 'cluster'
+      cluster: 'cluster'
+      user: 'pubsub-operator'
+    users:
+    - name: 'pubsub-operator'
+      token: '/var/run/secrets/kubernetes.io/serviceaccount/token'
+    currentContext: 'cluster'
