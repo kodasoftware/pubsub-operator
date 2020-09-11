@@ -3,19 +3,19 @@ google:
   pubsub:
     apiEndpoint: https://pubsub.googleapis.com
 
-kube:
-  config:
-    rootDirectory: '/var/run/secrets/kubernetes.io/serviceaccount'
-    clusters:
-    - name: 'gke_sauce-k8s--yak_europe-west2_sauce'
-      caFile: '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
-      server: 'https://10.20.0.1'
-      skipTLSVerify: true
-    contexts:
-    - name: 'gke_sauce-k8s--yak_europe-west2_sauce'
-      cluster: 'gke_sauce-k8s--yak_europe-west2_sauce'
-      user: 'pubsub-operator'
-    users:
-    - name: 'pubsub-operator'
-      token: '/var/run/secrets/kubernetes.io/serviceaccount/token'
-    currentContext: 'gke_sauce-k8s--yak_europe-west2_sauce'
+# kube:
+#   config:
+#     rootDirectory: '/var/run/secrets/kubernetes.io/serviceaccount'
+#     clusters:
+#     - name: 'gke_sauce-k8s--yak_europe-west2_sauce'
+#       caFile: '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt'
+#       server: 'https://10.20.0.1'
+#       skipTLSVerify: true
+#     contexts:
+#     - name: 'gke_sauce-k8s--yak_europe-west2_sauce'
+#       cluster: 'gke_sauce-k8s--yak_europe-west2_sauce'
+#       user: 'pubsub-operator'
+#     users:
+#     - name: 'pubsub-operator'
+#       token: '/var/run/secrets/kubernetes.io/serviceaccount/token'
+#     currentContext: 'gke_sauce-k8s--yak_europe-west2_sauce'
