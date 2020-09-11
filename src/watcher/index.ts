@@ -7,12 +7,11 @@ class Watcher {
     this.watcher = new Watch(kubeConfig)
   }
 
-  public start(
+  public async start(
     group: string, version: string, resource: string, handler: (phase: string, object: any) => void): Promise<void> {
-    return new Promise(async (res) => {
+    while (true) {
       await this.watcher.watch(`/apis/${group}/${version}/${resource}`, {}, handler, this.handleError)
-      res(await this.start(group, version, resource, handler))
-    })
+    }
   }
 
   private handleError(err?: any) {
