@@ -3,7 +3,7 @@ kind: Kustomization
 namespace: default
 resources:
   - customresourcedefinition.yaml
-  # - serviceaccount.yaml
+  - serviceaccount.yaml
   - role.yaml
   - rolebinding.yaml
   - deployment.yaml

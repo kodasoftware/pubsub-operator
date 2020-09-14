@@ -42,8 +42,8 @@ rules:
   verbs:
   - update
 - apiGroups:
-  - pubsubtopic.k8s.io
+  - pubsub.k8s.io
   resources:
-  - '*'
+  - ResourceAll
   verbs:
-  - '*'
+  - VerbAll

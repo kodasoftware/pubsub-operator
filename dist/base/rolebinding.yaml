@@ -12,6 +12,3 @@ subjects:
   - apiGroup: ""
     kind: ServiceAccount
     name: pubsub-operator
-  - apiGroup: ""
-    kind: ServiceAccount
-    name: default
