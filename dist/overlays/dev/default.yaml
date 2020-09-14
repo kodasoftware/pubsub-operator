@@ -9,7 +9,7 @@ kube:
     clusters:
     - name: gke_sauce-k8s--yak_europe-west2_sauce
       caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-      server: https://34.89.39.224
+      server: https://172.16.0.2
       skipTLSVerify: true
     contexts:
     - name: gke_sauce-k8s--yak_europe-west2_sauce
