@@ -7,7 +7,7 @@ export enum Errors {
 }
 
 class PubSub {
-  private readonly client: gcloud.PubSub
+  public readonly client: gcloud.PubSub
   private readonly log = logger({ name: 'pubsub:client' })
   constructor(
     config: ClientConfig,
@@ -15,7 +15,7 @@ class PubSub {
     this.client = new gcloud.PubSub(config)
   }
 
-  public async createTopic(name, opts: gcloud.CallOptions) {
+  public async createTopic(name) {
     await this.client.topic(name).create().catch(this.errorHandler)
   }
 

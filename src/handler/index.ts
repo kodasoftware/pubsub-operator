@@ -1,4 +1,4 @@
-import { PubSub } from '@google-cloud/pubsub'
+import { PubSub } from '../pubsub'
 import logger from '../logger'
 
 const ALREADY_EXISTS = 6
@@ -19,20 +19,20 @@ abstract class Handler {
   }
   protected async createPushSubscription(topic: string, subscription: string, pushEndpoint: string): Promise<void> {
     const config = { pushConfig: { pushEndpoint } }
-    await this.pubsub.topic(topic).createSubscription(subscription, config)
+    await this.pubsub.client.topic(topic).createSubscription(subscription, config)
       .catch(this.errorHandler)
     console.log('Created push subscription', topic + '/' + subscription, 'to endpoint', pushEndpoint)
   }
   protected async modifyPushSubscription(topic, subscription, pushEndpoint): Promise<void> {
-    await this.pubsub.topic(topic).subscription(subscription).modifyPushConfig({ pushEndpoint })
+    await this.pubsub.client.topic(topic).subscription(subscription).modifyPushConfig({ pushEndpoint })
     console.log('Modified push subscription', subscription, 'to endpoint', pushEndpoint)
   }
   protected async deleteSubscription(subscription: string): Promise<void> {
-    await this.pubsub.subscription(subscription).delete()
+    await this.pubsub.client.subscription(subscription).delete()
     console.log('Deleted subscription', subscription)
   }
   private errorHandler(err: any) {
-    if (err.code !== ALREADY_EXISTS) throw err
+    if (err.code !== ALREADY_EXISTS) this.log.error(err)
   }
 }
 

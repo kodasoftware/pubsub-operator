@@ -1,6 +1,5 @@
 import Watcher from './watcher'
-import { PubSub } from '@google-cloud/pubsub'
-import { pubsub } from './pubsub'
+import { PubSub } from './pubsub'
 import { TopicHandler, SubscriptionHandler, Handler } from './handler'
 import logger from './logger'
 
@@ -11,7 +10,7 @@ const SUPPORTED_RESOURCES = {
 
 export class App {
   private readonly watcher: Watcher
-  private readonly pubSubClient: PubSub
+  public readonly client: PubSub
   public readonly handler: Handler
   private readonly log = logger({ name: 'pubsub:app' })
 
@@ -24,13 +23,13 @@ export class App {
     namespace: string,
   ) {
     this.watcher = new Watcher(kubeConfig, namespace)
-    this.pubSubClient = pubsub(pubSubConfig)
+    this.client = new PubSub(pubSubConfig)
     switch (resource) {
       case SUPPORTED_RESOURCES.TOPICS:
-        this.handler = new TopicHandler(this.pubSubClient)
+        this.handler = new TopicHandler('pubsub:handler:topic', this.client)
         break
       case SUPPORTED_RESOURCES.SUBSCRIPTIONS:
-        this.handler = new SubscriptionHandler(this.pubSubClient)
+        this.handler = new SubscriptionHandler('pubsub:handler:subscription', this.client)
         break
       default:
         throw new Error('The resource ' + resource + ' is not one of the supported resources')
