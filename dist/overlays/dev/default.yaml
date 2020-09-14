@@ -1,3 +1,5 @@
+logger:
+  logLevel: trace
 
 google:
   projectId: sauce-k8s--yak

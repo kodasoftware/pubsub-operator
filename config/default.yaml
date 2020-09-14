@@ -1,3 +1,6 @@
+logger:
+  logLevel: trace
+
 google:
   projectId: local-project
   auth:

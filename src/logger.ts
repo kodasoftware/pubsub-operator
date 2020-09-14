@@ -1,3 +1,4 @@
 import * as log from 'pino'
+import { config } from './config'
 
-export default (options?: log.LoggerOptions) => log(options)
+export default ({ name }) => log({ ...config.logger, name })
