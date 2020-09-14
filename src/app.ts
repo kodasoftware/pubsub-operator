@@ -38,7 +38,7 @@ export class App {
 
   public async main() {
     try {
-      await this.watcher.start(this.group, this.version, this.resource, this.handler.handle.bind(this.handler))
+      await this.watcher.start(this.group, this.version, this.resource, this.handler)
     } catch (err) {
       this.log.error(err, 'Fatal error')
       process.exit(1)
