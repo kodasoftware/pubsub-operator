@@ -13,7 +13,7 @@ export class SubscriptionHandler extends Handler {
     switch (phase) {
       case Phase.ADDED:
         await this.createTopic(topic)
-        await this.pubsub.topic(topic).createSubscription(subscription, pushConfig)
+        await this.pubsub.client.topic(topic).createSubscription(subscription, pushConfig)
         break
       case Phase.MODIFIED:
         await this.modifyPushSubscription(topic, subscription, pushEndpoint)
