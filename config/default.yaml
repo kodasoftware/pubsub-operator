@@ -1,5 +1,7 @@
 google:
   projectId: local-project
+  auth:
+    keyFile: /path/to/key.json
   pubsub:
     apiEndpoint: localhost:8085
 

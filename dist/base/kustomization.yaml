@@ -9,4 +9,4 @@ resources:
   - deployment.yaml
 images:
   - name: gcr.io/sauce-gcr--hawk/pubsub-operator
-    newTag: 0.3.0
+    newTag: 0.3.1

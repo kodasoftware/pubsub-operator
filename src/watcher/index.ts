@@ -1,9 +1,11 @@
-import { Watch, KubeConfig, CustomObjectsApi } from '@kubernetes/client-node'
+import { KubeConfig, CustomObjectsApi } from '@kubernetes/client-node'
+import logger from '../logger'
 
 class Watcher {
   private readonly client: CustomObjectsApi
+  private readonly log = logger({ name: 'pubsub:watcher' })
   constructor(
-    private readonly kubeConfig?: KubeConfig,
+    private readonly kubeConfig: KubeConfig,
     public readonly namespace: string = 'default',
   ) {
     this.client = this.kubeConfig.makeApiClient(CustomObjectsApi)
@@ -21,7 +23,7 @@ class Watcher {
 
   private handleError(err?: any) {
     if (err) {
-      console.error(err)
+      this.log.error(err)
     }
   }
 }

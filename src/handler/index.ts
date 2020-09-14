@@ -1,11 +1,16 @@
-import { PubSub } from "@google-cloud/pubsub";
+import { PubSub } from '@google-cloud/pubsub'
+import logger from '../logger'
 
 const ALREADY_EXISTS = 6
 
 abstract class Handler {
+  private readonly log
   constructor(
+    name: string,
     public readonly pubsub: PubSub,
-  ) {}
+  ) {
+    this.log = logger({ name })
+  }
   public abstract handle(phase: Phase, data: any): Promise<void>
   protected async createTopic(name: string): Promise<void> {
     await this.pubsub.createTopic(name)

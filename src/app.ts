@@ -2,6 +2,7 @@ import Watcher from './watcher'
 import { PubSub } from '@google-cloud/pubsub'
 import { pubsub } from './pubsub'
 import { TopicHandler, SubscriptionHandler, Handler } from './handler'
+import logger from './logger'
 
 const SUPPORTED_RESOURCES = {
   TOPICS: 'pubsubtopics',
@@ -12,6 +13,7 @@ export class App {
   private readonly watcher: Watcher
   private readonly pubSubClient: PubSub
   public readonly handler: Handler
+  private readonly log = logger({ name: 'pubsub:app' })
 
   constructor(
     public readonly group: string,
@@ -39,7 +41,7 @@ export class App {
     try {
       await this.watcher.start(this.group, this.version, this.resource, this.handler.handle.bind(this.handler))
     } catch (err) {
-      console.error(err)
+      this.log.error(err, 'Fatal error')
       process.exit(1)
     }
   }
