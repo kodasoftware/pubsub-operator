@@ -2,6 +2,10 @@ import { Handler, Phase } from './'
 
 export class SubscriptionHandler extends Handler {
   public async handle(phase: string, data: any): Promise<void> {
+    if (!phase || !data) {
+      console.log('Ignoring phase', phase, 'and data', data)
+      return
+    }
     const topic = data.spec.topic
     const subscription = data.metadata.name
     const pushEndpoint = data.spec.endpoint

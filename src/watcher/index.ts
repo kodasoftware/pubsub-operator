@@ -8,7 +8,7 @@ class Watcher {
 
   public start(
     group: string, version: string, resource: string, handler: (phase: string, object: any) => void): Promise<void> {
-    const url = `/apis/${group}/${version}/namespaces/${process.env.NAMESPACE}/${resource}`
+    const url = `/apis/${group}/${version}/${resource}`
     return new Promise((res) => this.watcher.watch(url, {}, handler, (err) => {
       this.handleError(err)
       res()
