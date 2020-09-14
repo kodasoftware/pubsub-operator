@@ -18,7 +18,7 @@ class Watcher {
       .then((res) => {
         const body = res.body as any
         if (!body) return
-        handler.handle(body.type, body.object)
+        return handler.handle.bind(handler)(body.type, body.object)
       }, this.handleError).then(() => this.start(group, version, resource, handler))
   }
 
