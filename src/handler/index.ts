@@ -14,13 +14,17 @@ abstract class Handler {
   public abstract handle(phase: Phase, data: any): Promise<void>
   protected async createTopic(name: string): Promise<void> {
     await this.pubsub.createTopic(name)
-      .catch(this.errorHandler)
+      .catch((err: any) => {
+    if (err.code !== ALREADY_EXISTS) this.log.error(err)
+  })
     this.log.debug('Created topic', name)
   }
   protected async createPushSubscription(topic: string, subscription: string, pushEndpoint: string): Promise<void> {
     const config = { pushConfig: { pushEndpoint } }
     await this.pubsub.client.topic(topic).createSubscription(subscription, config)
-      .catch(this.errorHandler)
+      .catch((err: any) => {
+    if (err.code !== ALREADY_EXISTS) this.log.error(err)
+  })
     this.log.debug('Created push subscription', topic + '/' + subscription, 'to endpoint', pushEndpoint)
   }
   protected async modifyPushSubscription(topic, subscription, pushEndpoint): Promise<void> {
