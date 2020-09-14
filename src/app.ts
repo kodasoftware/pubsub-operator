@@ -20,7 +20,7 @@ export class App {
     kubeConfig: any,
     pubSubConfig: any,
   ) {
-    this.watcher = new Watcher(kubeConfig)
+    this.watcher = new Watcher(kubeConfig, process.env.NAMESPACE)
     this.pubSubClient = pubsub(pubSubConfig)
     switch (resource) {
       case SUPPORTED_RESOURCES.TOPICS:
