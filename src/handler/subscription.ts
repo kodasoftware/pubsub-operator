@@ -3,7 +3,6 @@ import { Handler, Phase } from './'
 export class SubscriptionHandler extends Handler {
   public async handle(phase: string, data: any): Promise<void> {
     if (!phase || !data) {
-      console.log('Ignoring phase', phase, 'and data', data)
       return
     }
     const topic = data.spec.topic
@@ -22,8 +21,6 @@ export class SubscriptionHandler extends Handler {
       case Phase.DELETED:
         await this.deleteSubscription(subscription)
         break
-      default:
-        console.log('[SubscriptionHandler] Ignoring phase', phase, 'and data', data)
     }
   }
 }

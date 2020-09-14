@@ -19,8 +19,9 @@ export class App {
     public readonly resource: string,
     kubeConfig: any,
     pubSubConfig: any,
+    namespace: string,
   ) {
-    this.watcher = new Watcher(kubeConfig, process.env.NAMESPACE)
+    this.watcher = new Watcher(kubeConfig, namespace)
     this.pubSubClient = pubsub(pubSubConfig)
     switch (resource) {
       case SUPPORTED_RESOURCES.TOPICS:
@@ -36,7 +37,7 @@ export class App {
 
   public async main() {
     try {
-      await this.watcher.start(this.group, this.version, this.resource, this.handler.handle)
+      await this.watcher.start(this.group, this.version, this.resource, this.handler.handle.bind(this.handler))
     } catch (err) {
       console.error(err)
       process.exit(1)

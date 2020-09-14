@@ -18,12 +18,14 @@ if (config.has(API_ENDPOINT_KEY)) {
 const kubeConfig = config.has('kube.config') ? config.util.toObject(config.get('kube.config')) : null;
 const cfg = config.util.toObject()
 
-export function configureConfig(options?: any) {
+export function configureConfig(options?: any, inCluster: boolean = false) {
   const config = new k8s.KubeConfig();
   if (options) {
     config.loadFromOptions(options);
-  } else {
+  } else if (inCluster) {
     config.loadFromCluster();
+  } else {
+    config.loadFromDefault()
   }
   return config;
 }
