@@ -15,10 +15,10 @@ class Watcher {
   public async start(
     group: string, version: string, resource: string, handler: Handler): Promise<void> {
     await this.client.listNamespacedCustomObject(group, version, this.namespace, resource, "", null, null, null, 5, true)
-      .then((res) => {
+      .then(async (res) => {
         const body = res.body as any
         if (!body) return
-        return handler.handle.call(this)(body.type, body.object)
+        await handler.handle.call(this)(body.type, body.object)
       }, this.handleError.bind(this)).then(() => this.start(group, version, resource, handler))
   }
 
