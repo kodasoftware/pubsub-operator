@@ -9,5 +9,9 @@ roleRef:
   name: pubsub-operator
   apiGroup: rbac.authorization.k8s.io
 subjects:
-  - kind: ServiceAccount
+  - apiGroup: ""
+    kind: ServiceAccount
+    name: pubsub-operator
+  - apiGroup: ""
+    kind: ServiceAccount
     name: default
