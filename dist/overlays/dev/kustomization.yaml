@@ -12,6 +12,12 @@ configMapGenerator:
     behavior: create
     files:
       - default.yaml
+secretGenerator:
+  - name: pubsub-operator-credentials
+    behavior: create
+    type: Opaque
+    files:
+      - key.json
 patches:
   - target:
       group: apps

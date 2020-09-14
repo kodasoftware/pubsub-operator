@@ -90,6 +90,7 @@ jobs:
             ssh -T github.com -o "StrictHostKeyChecking no"
             git clone git@github.com:sauce-consortia/pubsub-operator.git
             gcloud container clusters get-credentials $GOOGLE_CLUSTER_NAME --region $GOOGLE_CLUSTER_REGION
+            cp secrets/pubsub-operator/key.json pubsub-operator/dist/overlays/$ENVIRONMENT
             kustomize build pubsub-operator/dist/overlays/$ENVIRONMENT | kubectl apply -f -
 
 # 

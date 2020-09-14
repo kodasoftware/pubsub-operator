@@ -26,6 +26,9 @@ spec:
         envFrom:
           - configMapRef:
               name: pubsub-operator-env-vars
+        volumeMounts:
+          - name: credentials
+            mountPath: /opt/credentials
       - name: subscriptions
         image: gcr.io/sauce-gcr--hawk/pubsub-operator
         imagePullPolicy: Always
@@ -36,3 +39,11 @@ spec:
         envFrom:
           - configMapRef:
               name: pubsub-operator-env-vars
+        volumeMounts:
+          - name: credentials
+            mountPath: /opt/credentials
+      volumes:
+        - name: credentials
+          configMap:
+            - name: pubsub-operator-credentials
+              
