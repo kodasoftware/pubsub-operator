@@ -4,7 +4,7 @@ import logger from '../logger'
 const ALREADY_EXISTS = 6
 
 abstract class Handler {
-  private readonly log
+  protected readonly log
   constructor(
     name: string,
     public readonly pubsub: PubSub,
