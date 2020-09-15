@@ -15,7 +15,7 @@ abstract class Handler {
   protected async createTopic(name: string): Promise<void> {
     await this.pubsub.createTopic(name)
       .catch((err: any) => {
-    if (err.code !== ALREADY_EXISTS) this.log.error(err)
+    if (err.code !== ALREADY_EXISTS) throw err
   })
     this.log.debug('Created topic', name)
   }
@@ -23,7 +23,7 @@ abstract class Handler {
     const config = { pushConfig: { pushEndpoint } }
     await this.pubsub.client.topic(topic).createSubscription(subscription, config)
       .catch((err: any) => {
-    if (err.code !== ALREADY_EXISTS) this.log.error(err)
+    if (err.code !== ALREADY_EXISTS) throw err
   })
     this.log.debug('Created push subscription', topic + '/' + subscription, 'to endpoint', pushEndpoint)
   }
@@ -34,9 +34,6 @@ abstract class Handler {
   protected async deleteSubscription(subscription: string): Promise<void> {
     await this.pubsub.client.subscription(subscription).delete()
     this.log.debug('Deleted subscription', subscription)
-  }
-  private errorHandler(err: any) {
-    if (err.code !== ALREADY_EXISTS) this.log.error(err)
   }
 }
 
