@@ -31,6 +31,9 @@ patches:
           - name: config
             configMap:
               name: pubsub-operator-default-config
+          - name: credentials
+            configMap:
+              - name: pubsub-operator-credentials
       - op: add
         path: /spec/template/spec/containers/0/volumeMounts
         value:
