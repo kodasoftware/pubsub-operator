@@ -3,8 +3,6 @@ logger:
 
 google:
   projectId: sauce-k8s--yak
-  auth:
-    keyFile: /opt/credentials/key.json
   pubsub:
     apiEndpoint: https://pubsub.googleapis.com
 
