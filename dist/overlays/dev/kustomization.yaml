@@ -33,17 +33,21 @@ patches:
               name: pubsub-operator-default-config
           - name: credentials
             configMap:
-              - name: pubsub-operator-credentials
+              name: pubsub-operator-credentials
       - op: add
         path: /spec/template/spec/containers/0/volumeMounts
         value:
           - name: config
             mountPath: /opt/app/config
+          - name: credentials
+            mountPath: /opt/credentials
       - op: add
         path: /spec/template/spec/containers/1/volumeMounts
         value:
           - name: config
             mountPath: /opt/app/config
+          - name: credentials
+            mountPath: /opt/credentials
   # - target:
   #     group: rbac.authorization.k8s.io
   #     version: v1
