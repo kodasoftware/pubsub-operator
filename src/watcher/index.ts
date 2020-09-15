@@ -2,9 +2,10 @@ import { KubeConfig, CustomObjectsApi } from '@kubernetes/client-node'
 import logger from '../logger'
 import { Handler } from '../handler'
 
+const LOGGER = logger({ name: 'pubsub:watcher' })
+
 class Watcher {
   private readonly client: CustomObjectsApi
-  private readonly log = logger({ name: 'pubsub:watcher' })
   constructor(
     private readonly kubeConfig: KubeConfig,
     public readonly namespace: string = 'default',
@@ -18,13 +19,13 @@ class Watcher {
       .then(async (res) => {
         const body = res.body as any
         if (!body) return
-        await handler.handle(body.type, body.object).catch(this.handleError.bind(this))
-      }, this.handleError.bind(this)).then(() => this.start(group, version, resource, handler))
+        await handler.handle(body.type, body.object).catch(this.handleError)
+      }, this.handleError).then(() => this.start(group, version, resource, handler))
   }
 
   private handleError(err?: any) {
     if (err) {
-      this.log.error(err)
+      LOGGER.error(err)
     }
   }
 }
